@@ -1,6 +1,6 @@
 module dataStructures_mod
         implicit none
-        ! Contains no lists form the moment
+
         type :: a_tree_node
             character(len=:),  allocatable :: deityName 
             type(a_tree_node), pointer     :: left
@@ -15,7 +15,8 @@ module dataStructures_mod
             type(a_list_item), pointer :: next
         end type a_list_item
 
-!        private :: getDeityNode
+        private :: getDeityNode
+        private :: sumListValues
         
 contains
 
@@ -37,6 +38,8 @@ contains
             newNode = a_list_item(deityNode=newDeityNode, amount=amount, next=null())
             newNode%next => head
             head => newNode
+        else if (newDeityNode%deityName == head%deityNode%deityName) then
+            head%amount = head%amount + amount
         else 
             call listInsert(head%next, newDeityNode, amount)
         end if
@@ -47,11 +50,34 @@ contains
         type(a_list_item), pointer, intent(in) :: head
 
         if(associated(head)) then
-            print *, "    ", head%deityNode%deityName, head%amount
+            print '(a15, a2, f0.2)', head%deityNode%deityName, ' ', head%amount
             call printList(head%next)
         end if 
     end subroutine printList
 
+    ! Subroutine which destroys the list provided
+    recursive subroutine destroyList(head)
+        type(a_list_item), pointer, intent(in out) :: head
+
+        if (associated(head)) then
+            call destroyList(head%next)
+            deallocate(head)
+        end if
+    end subroutine destroyList
+
+    ! Function which returns the sum of values of all de list items
+    recursive function sumListValues(head) result(totalValue)
+        type(a_list_item), pointer, intent(in) :: head
+
+        real :: totalValue
+
+        if(associated(head)) then
+            totalValue = head%amount
+            totalValue = totalValue + sumListValues(head%next)
+        else
+            totalValue = 0.0
+        end if
+    end function sumListValues
 
     ! TREE ---------------------------------------
     ! Subroutine which prints the value of the node 
@@ -62,11 +88,11 @@ contains
             call printBst(node%left)
             print *, node%deityName
             if (associated(node%debit)) then
-                print *, "  debit" 
+                print '(a9)', "debit" 
                 call printList(node%debit)
             end if
             if (associated(node%credit)) then
-                print *, "  credit" 
+                print '(a10)', "credit" 
                 call printList(node%credit)
             end if
             call printBst(node%right)
@@ -81,7 +107,7 @@ contains
         if (.not.associated(node)) then
             allocate(node)
             node = a_tree_node(deityName=newName, left=null(), right=null(), credit=null(), debit=null())
-            print *, newName, " has been added"
+            print *, newName, " has been added."
         else if (lgt(node%deityName, newName)) then
             call bstInsert(node%left, newName)
         else if (llt(node%deityName, newName)) then
@@ -141,6 +167,41 @@ contains
         call listInsert(firstDeityNode%debit, secondDeityNode, amount)
     end subroutine insertDebit
 
+    ! Function which returns the total credit of the tree
+    recursive function sumTreeValuesCredit(root) result(totalValue)
+        type(a_tree_node), pointer, intent(in) :: root
+
+        real :: totalValue
+        totalValue = 0.0
+        if (associated(root)) then
+            totalValue = sumListValues(root%credit)
+            totalValue = totalValue + sumTreeValuesCredit(root%left)
+            totalValue = totalValue + sumTreeValuesCredit(root%right)
+        end if
+    end function sumTreeValuesCredit
+
+    ! Function which returns the total dbeit of the tree
+    recursive function sumTreeValuesDebit(root) result(totalValue)
+        type(a_tree_node), pointer, intent(in) :: root
+
+        real :: totalValue
+        totalValue = 0.0
+        if (associated(root)) then
+            totalValue = sumListValues(root%debit)
+            totalValue = totalValue + sumTreeValuesDebit(root%left)
+            totalValue = totalValue + sumTreevaluesDebit(root%right)
+        end if
+    end function sumTreeValuesDebit
+
+    ! Subroutine which prints the total credit and debit of the tree
+    subroutine totalDebitAndCredit(root)
+        type(a_tree_node), pointer, intent(in) :: root
+        
+        print *, ''
+        print '(a10, a2, f0.2)', "Net debit: ", "", sumTreeValuesCredit(root)
+        print '(a10, a2, f0.2)', "Net Credit: ", "",  sumTreeValuesDebit(root)
+    end subroutine
+
     ! Subroutine which destroys the tree
     recursive subroutine bstDestroy(node)
         type(a_tree_node), pointer, intent(in out) :: node
@@ -148,6 +209,9 @@ contains
         if (associated(node)) then
             call bstDestroy(node%left)
             call bstDestroy(node%right)
+
+            call destroyList(node%credit)
+            call destroyList(node%debit)
             deallocate(node)
         end if
     end subroutine

@@ -38,12 +38,13 @@ program mainProg
                 end if
             end block
         else
-            print *, "Wrong transaction '", trim(transaction), "'"
+            print *, "Wrong transaction '", trim(transaction), "'."
         end if
     end do
 
     print *, ""
     call printBst(root)
+    call totalDebitAndCredit(root)
     call bstDestroy(root)
 
 end program mainProg
