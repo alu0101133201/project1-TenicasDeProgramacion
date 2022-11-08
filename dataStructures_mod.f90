@@ -14,6 +14,8 @@ module dataStructures_mod
             real                       :: amount
             type(a_list_item), pointer :: next
         end type a_list_item
+
+!        private :: getDeityNode
         
 contains
 
@@ -45,7 +47,7 @@ contains
         type(a_list_item), pointer, intent(in) :: head
 
         if(associated(head)) then
-            print *, head%deityNode%deityName, head%amount
+            print *, "    ", head%deityNode%deityName, head%amount
             call printList(head%next)
         end if 
     end subroutine printList
@@ -59,6 +61,14 @@ contains
         if (associated(node)) then
             call printBst(node%left)
             print *, node%deityName
+            if (associated(node%debit)) then
+                print *, "  debit" 
+                call printList(node%debit)
+            end if
+            if (associated(node%credit)) then
+                print *, "  credit" 
+                call printList(node%credit)
+            end if
             call printBst(node%right)
         end if
     end subroutine printBst 
@@ -80,6 +90,56 @@ contains
             continue
         end if
     end subroutine bstInsert
+
+    ! Private function which returns the node of the deityName provided
+    recursive function getDeityNode(root, deityName) result(deityNode)
+        type(a_tree_node), pointer, intent(in)     :: root
+        character(len=:),  allocatable, intent(in) :: deityName
+        type(a_tree_node), pointer                 :: deityNode
+
+        if(.not.associated(root)) then
+            deityNode => null()
+            print *, "Looking for a deity that is not in the tree"
+        else if (llt(deityName, root%deityName)) then
+            deityNode => getDeityNode(root%left, deityName)
+        else if (lgt(deityname, root%deityName)) then
+            deityNode => getDeityNode(root%right, deityName)
+        else
+            deityNode => root
+        end if
+    end function getDeityNode
+
+
+    ! Subroutine which inserts a new credit into a deity list
+    subroutine insertCredit(root, deityName, secondDeityName, amount)
+        type(a_tree_node), pointer, intent(in)    :: root
+        character(len=:), allocatable, intent(in) :: deityName
+        character(len=:), allocatable, intent(in) :: secondDeityName
+        real,                          intent(in) :: amount 
+
+        type(a_tree_node), pointer :: firstDeityNode 
+        type(a_tree_node), pointer :: secondDeityNode 
+        firstDeityNode => getDeityNode(root, deityName)
+        secondDeityNode => getDeityNode(root, secondDeityName)
+
+        call listInsert(firstDeityNode%credit, secondDeityNode, amount)       
+    end subroutine insertCredit
+
+
+    ! Subroutine which inserts a new debit into a deity list
+    subroutine insertDebit(root, deityName, secondDeityName, amount)
+        type(a_tree_node), pointer, intent(in)    :: root
+        character(len=:), allocatable, intent(in) :: deityName
+        character(len=:), allocatable, intent(in) :: secondDeityName
+        real,                          intent(in) :: amount 
+
+        type(a_tree_node), pointer :: firstDeityNode 
+        type(a_tree_node), pointer :: secondDeityNode 
+        firstDeityNode => getDeityNode(root, deityName)
+        secondDeityNode => getDeityNode(root, secondDeityName)
+
+        call listInsert(firstDeityNode%debit, secondDeityNode, amount)
+    end subroutine insertDebit
 
     ! Subroutine which destroys the tree
     recursive subroutine bstDestroy(node)

@@ -28,27 +28,22 @@ program mainProg
                 secondDeityName = trim(secondName)
                 call bstInsert(root, firstDeityName)
                 call bstInsert(root, secondDeityName)
+
+                if (transaction == "lent") then
+                    call insertDebit(root, firstDeityName, secondDeityName, amount)
+                    call insertCredit(root, secondDeityName, firstDeityName, amount)
+                else
+                    call insertCredit(root, firstDeityName, secondDeityName, amount)
+                    call insertDebit(root, secondDeityname, firstDeityName, amount)
+                end if
             end block
         else
             print *, "Wrong transaction '", trim(transaction), "'"
         end if
     end do
 
-
-    print *, " "
-    ! list test
-    block
-        type(a_list_item), pointer :: head
-        head => null()
-        call listInsert(head, root, 15.0)
-        call listInsert(head, root%left, 20.0)
-        call listInsert(head, root%left%left, 10.0)
-        call listInsert(head, root%right%right, 108.13)
-        call printList(head)
-    end block
-
-
-
+    print *, ""
+    call printBst(root)
     call bstDestroy(root)
 
 end program mainProg
