@@ -50,7 +50,7 @@ contains
         type(a_list_item), pointer, intent(in) :: head
 
         if(associated(head)) then
-            print '(a15, a2, f0.2)', head%deityNode%deityName, ' ', head%amount
+            print '(7x, a, a2, f0.2)', head%deityNode%deityName, ' ', head%amount
             call printList(head%next)
         end if 
     end subroutine printList
