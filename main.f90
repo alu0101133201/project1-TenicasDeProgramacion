@@ -1,3 +1,6 @@
+! File which implements the main program of the Project 1 - TdP subject.
+! Sergio Guerra Arencibia - ULL - 08-11-2022
+
 program mainProg
     use :: dataStructures_mod 
     implicit none
@@ -38,11 +41,11 @@ program mainProg
                 end if
             end block
         else
-            print *, "Wrong transaction '", trim(transaction), "'."
+            print '(a, a, a)', "Wrong transaction '", trim(transaction), "'."
         end if
     end do
 
-    print *, ""
+    print '(a)'
     call printBst(root)
     call totalDebitAndCredit(root)
     call bstDestroy(root)

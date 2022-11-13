@@ -1,3 +1,7 @@
+! File which implements the data structures (Binary Search Tree and single
+! linked list) that will be used in Project 1 - TdP subject.
+! Sergio Guerra Arencibia - ULL - 08-11-2022
+
 module dataStructures_mod
         implicit none
 
@@ -50,7 +54,7 @@ contains
         type(a_list_item), pointer, intent(in) :: head
 
         if(associated(head)) then
-            print '(7x, a, a2, f0.2)', head%deityNode%deityName, ' ', head%amount
+            print '(8x, a, a, f0.2)', head%deityNode%deityName, ' ', head%amount
             call printList(head%next)
         end if 
     end subroutine printList
@@ -86,13 +90,13 @@ contains
 
         if (associated(node)) then
             call printBst(node%left)
-            print *, node%deityName
+            print '(a, a)', node%deityName, ':'
             if (associated(node%debit)) then
-                print '(a9)', "debit" 
+                print '(4x, a)', "debit" 
                 call printList(node%debit)
             end if
             if (associated(node%credit)) then
-                print '(a10)', "credit" 
+                print '(4x, a)', "credit" 
                 call printList(node%credit)
             end if
             call printBst(node%right)
@@ -107,7 +111,7 @@ contains
         if (.not.associated(node)) then
             allocate(node)
             node = a_tree_node(deityName=newName, left=null(), right=null(), credit=null(), debit=null())
-            print *, newName, " has been added."
+            print '(a, a)', newName, " has been added."
         else if (lgt(node%deityName, newName)) then
             call bstInsert(node%left, newName)
         else if (llt(node%deityName, newName)) then
@@ -197,9 +201,9 @@ contains
     subroutine totalDebitAndCredit(root)
         type(a_tree_node), pointer, intent(in) :: root
         
-        print *, ''
-        print '(a10, a2, f0.2)', "Net debit: ", "", sumTreeValuesCredit(root)
-        print '(a10, a2, f0.2)', "Net Credit: ", "",  sumTreeValuesDebit(root)
+        print '(a)'
+        print '(a, f0.2)', "Net debit:  ", sumTreeValuesCredit(root)
+        print '(a, f0.2)', "Net credit: ",  sumTreeValuesDebit(root)
     end subroutine
 
     ! Subroutine which destroys the tree
@@ -215,5 +219,4 @@ contains
             deallocate(node)
         end if
     end subroutine
-
 end module dataStructures_mod
