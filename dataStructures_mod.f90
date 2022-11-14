@@ -15,7 +15,7 @@ module dataStructures_mod
 
         type :: a_list_item
             type(a_tree_node), pointer :: deityNode
-            real                       :: amount
+            real(kind=8)               :: amount
             type(a_list_item), pointer :: next
         end type a_list_item
 
@@ -29,7 +29,7 @@ contains
     recursive subroutine listInsert(head, newDeityNode, amount)
         type(a_list_item), pointer, intent(in out) :: head
         type(a_tree_node), pointer, intent(in)     :: newDeityNode 
-        real,                          intent(in)  :: amount
+        real(kind=8),                  intent(in)  :: amount
 
         type(a_list_item), pointer :: newNode 
 
@@ -73,7 +73,7 @@ contains
     recursive function sumListValues(head) result(totalValue)
         type(a_list_item), pointer, intent(in) :: head
 
-        real :: totalValue
+        real(kind=8) :: totalValue
 
         if(associated(head)) then
             totalValue = head%amount
@@ -145,7 +145,7 @@ contains
         type(a_tree_node), pointer, intent(in)    :: root
         character(len=:), allocatable, intent(in) :: deityName
         character(len=:), allocatable, intent(in) :: secondDeityName
-        real,                          intent(in) :: amount 
+        real(kind=8),                          intent(in) :: amount 
 
         type(a_tree_node), pointer :: firstDeityNode 
         type(a_tree_node), pointer :: secondDeityNode 
@@ -161,7 +161,7 @@ contains
         type(a_tree_node), pointer, intent(in)    :: root
         character(len=:), allocatable, intent(in) :: deityName
         character(len=:), allocatable, intent(in) :: secondDeityName
-        real,                          intent(in) :: amount 
+        real(kind=8),                          intent(in) :: amount 
 
         type(a_tree_node), pointer :: firstDeityNode 
         type(a_tree_node), pointer :: secondDeityNode 
@@ -175,7 +175,7 @@ contains
     recursive function sumTreeValuesCredit(root) result(totalValue)
         type(a_tree_node), pointer, intent(in) :: root
 
-        real :: totalValue
+        real(kind=8) :: totalValue
         totalValue = 0.0
         if (associated(root)) then
             totalValue = sumListValues(root%credit)
@@ -188,7 +188,7 @@ contains
     recursive function sumTreeValuesDebit(root) result(totalValue)
         type(a_tree_node), pointer, intent(in) :: root
 
-        real :: totalValue
+        real(kind=8) :: totalValue
         totalValue = 0.0
         if (associated(root)) then
             totalValue = sumListValues(root%debit)

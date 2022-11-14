@@ -12,7 +12,7 @@ program mainProg
     character(len=upperBoundLength) :: secondName
     character(len=upperBoundLength) :: transaction
     character(len=upperBoundLength) :: preposition
-    real :: amount
+    real(kind=8) :: amount
     ! Binary search tree declaration
     type(a_tree_node), pointer :: root 
     root => null()
